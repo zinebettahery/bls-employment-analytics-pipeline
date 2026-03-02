@@ -62,16 +62,15 @@ Niveau d’agrégation choisi :
 
 bls-cew-data-pipeline/
 │
-├── src/
-│ ├── ingestion/
-│ │ └── download_cew_data.py
-│ │
-│ ├── exploration/
-│ │ └── eda.py
-│ │
-│ ├── transformation/
-│ │ ├── cleaning.py
-│ │ └── kpis.py
+├── ingestion/
+│  └── download_cew_data.py
+│ 
+├── exploration/
+│  └── eda.py
+│ 
+├── transformation/
+│ ├── cleaning.py
+│ └── kpis.py
 │
 ├── notebooks/
 ├── requirements.txt
@@ -88,7 +87,7 @@ bls-cew-data-pipeline/
 - Extraction des fichiers `.annual*.csv`
 - Stockage dans la couche Bronze
 
-Fichier : src/ingestion/download_cew_data.py
+Fichier : ingestion/download_cew_data.py
 
 
 ---
@@ -103,7 +102,7 @@ Analyse des données brutes :
 - Vérification des doublons
 - Détection des valeurs négatives
 
-Fichier : src/exploration/eda.py
+Fichier : exploration/eda.py
 
 
 ---
@@ -140,7 +139,7 @@ KPIs calculés :
 4. Croissance annuelle (OTY %)
 5. Top industries par emploi
 
-Fichier : src/transformation/kpis.py
+Fichier : transformation/kpis.py
 
 ---
 
