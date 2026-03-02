@@ -12,18 +12,27 @@ Ce projet automatise :
 
 ## Objectif du projet
 
-Mettre en place une architecture Data Lake complète :
+L’objectif de ce projet est de concevoir une pipeline Data Engineering complète basée sur les données publiques du BLS (QCEW/CEW), allant de l’ingestion brute jusqu’à l’analyse avancée et la modélisation prédictive.
 
-- Bronze : Données brutes (CSV)
-- Silver : Données nettoyées et filtrées
-- Gold : KPIs prêts pour dashboard
+Le projet vise à :
 
-Ce projet démontre :
-- Maîtrise de Spark / Databricks
-- Gestion de volumes Unity Catalog
-- Nettoyage avancé des données
-- Construction de KPIs analytiques
-- Intégration Spark + Pandas
+- Automatiser le téléchargement et l’extraction des données annuelles BLS
+- Mettre en place une architecture Data Lake structurée (Bronze / Silver / Gold)
+- Appliquer des règles de nettoyage et de standardisation robustes
+- Construire des indicateurs analytiques pertinents (KPIs)
+- Comparer l’évolution de l’emploi entre secteur privé et secteur public
+- Analyser l’impact des chocs économiques (ex: COVID-19)
+- Implémenter un modèle de Machine Learning pour prévoir les tendances futures de l’emploi
+
+Ce projet démontre la capacité à :
+
+- Travailler avec des datasets volumineux (36M+ lignes brutes)
+- Utiliser Spark et Delta Lake dans un environnement Databricks
+- Concevoir une pipeline reproductible et scalable
+- Transformer des données brutes en insights exploitables
+- Intégrer l’analyse prédictive dans une architecture data moderne
+
+En résumé, ce projet illustre une approche complète de l’ingénierie des données combinée à l’analyse avancée et au Machine Learning.
 
 ---
 
