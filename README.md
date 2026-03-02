@@ -1,12 +1,20 @@
-# BLS CEW Data Pipeline (Bronze → Silver → Gold)
+# BLS CEW Data Pipeline (Bronze → Silver → Gold → ML)
 
 Pipeline Data Engineering de bout en bout construit sur les données **BLS QCEW / CEW Annual Singlefile** (2015–2024/2025 selon disponibilité).
 
-Ce projet automatise :
-- L’ingestion des données BLS
-- L’analyse exploratoire (EDA) des données brutes
-- La transformation vers une couche Silver propre (Delta Lake)
-- Le calcul de KPIs analytiques (Public vs Privé) avec Pandas
+Ce projet met en place une architecture Data Lake complète et reproductible permettant de transformer des données brutes volumineuses (36M+ lignes) en indicateurs analytiques et en modèles prédictifs.
+
+Le pipeline automatise :
+
+- L’ingestion et l’extraction automatisée des données BLS
+- L’analyse exploratoire (EDA) et le contrôle qualité des données brutes
+- La transformation vers une couche Silver propre et structurée (Delta Lake)
+- Le calcul de KPIs analytiques (comparaison secteur Public vs Privé)
+- L’analyse des tendances du marché du travail (croissance, salaires, chocs économiques)
+- L’implémentation d’un modèle de Machine Learning pour la prévision de l’emploi
+- L’exploration de l’impact potentiel de l’intelligence artificielle sur l’évolution des emplois et des secteurs économiques
+
+Ce projet combine Data Engineering, Data Analysis et Machine Learning dans un environnement Databricks moderne.
 
 ---
 
@@ -22,6 +30,7 @@ Le projet vise à :
 - Construire des indicateurs analytiques pertinents (KPIs)
 - Comparer l’évolution de l’emploi entre secteur privé et secteur public
 - Analyser l’impact des chocs économiques (ex: COVID-19)
+- Explorer l’impact potentiel de l’intelligence artificielle sur l’évolution de l’emploi
 - Implémenter un modèle de Machine Learning pour prévoir les tendances futures de l’emploi
 
 Ce projet démontre la capacité à :
