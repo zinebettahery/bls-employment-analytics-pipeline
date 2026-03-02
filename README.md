@@ -168,4 +168,5 @@ Repos → Add Repo → GitHub
 - Databricks
 - Delta Lake
 - Pandas
+- Jira & Confluence
 
