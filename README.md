@@ -2,46 +2,45 @@
 
 Pipeline Data Engineering de bout en bout construit sur les données **BLS QCEW / CEW Annual Singlefile** (2015–2024/2025 selon disponibilité).
 
-Ce projet met en place une architecture Data Lake complète et reproductible permettant de transformer des données brutes volumineuses (36M+ lignes) en indicateurs analytiques et en modèles prédictifs.
+Ce projet met en place une architecture Data Lake moderne et reproductible permettant de transformer des données brutes volumineuses (36M+ lignes) en indicateurs analytiques et en modèles prédictifs.
 
-Le pipeline automatise :
+Le pipeline couvre :
 
-- L’ingestion et l’extraction automatisée des données BLS
-- L’analyse exploratoire (EDA) et le contrôle qualité des données brutes
-- La transformation vers une couche Silver propre et structurée (Delta Lake)
-- Le calcul de KPIs analytiques (comparaison secteur Public vs Privé)
+- L’ingestion automatisée et l’extraction des données BLS
+- L’analyse exploratoire (EDA) et le contrôle qualité des données
+- La transformation vers une couche Silver structurée (Delta Lake)
+- La construction d’indicateurs analytiques (comparaison Public vs Privé)
 - L’analyse des tendances du marché du travail (croissance, salaires, chocs économiques)
-- L’implémentation d’un modèle de Machine Learning pour la prévision de l’emploi
-- L’exploration de l’impact potentiel de l’intelligence artificielle sur l’évolution des emplois et des secteurs économiques
+- L’étude des transformations sectorielles liées à l’automatisation et à l’intelligence artificielle
+-  L’implémentation d’un modèle de Machine Learning pour la prévision de l’emploi
 
-Ce projet combine Data Engineering, Data Analysis et Machine Learning dans un environnement Databricks moderne.
+
+Ce projet combine Data Engineering, Data Analysis et Machine Learning dans un environnement Databricks basé sur Spark et Delta Lake.
 
 ---
 
 ## Objectif du projet
 
-L’objectif de ce projet est de concevoir une pipeline Data Engineering complète basée sur les données publiques du BLS (QCEW/CEW), allant de l’ingestion brute jusqu’à l’analyse avancée et la modélisation prédictive.
+L’objectif est de concevoir une pipeline Data Engineering complète exploitant les données publiques du BLS, depuis l’ingestion brute jusqu’à l’analyse avancée et la modélisation prédictive.
 
-Le projet vise à :
+Plus précisément, le projet vise à :
 
-- Automatiser le téléchargement et l’extraction des données annuelles BLS
-- Mettre en place une architecture Data Lake structurée (Bronze / Silver / Gold)
-- Appliquer des règles de nettoyage et de standardisation robustes
-- Construire des indicateurs analytiques pertinents (KPIs)
-- Comparer l’évolution de l’emploi entre secteur privé et secteur public
-- Analyser l’impact des chocs économiques (ex: COVID-19)
-- Explorer l’impact potentiel de l’intelligence artificielle sur l’évolution de l’emploi
-- Implémenter un modèle de Machine Learning pour prévoir les tendances futures de l’emploi
+- Structurer un Data Lake en couches Bronze / Silver / Gold
+- Mettre en place des règles de nettoyage et de standardisation robustes
+- Produire des KPIs pertinents sur l’évolution de l’emploi et des salaires
+- Comparer les dynamiques entre secteur privé et secteur public
+- Analyser les chocs macroéconomiques (ex : COVID-19)
+- Explorer les tendances sectorielles pouvant refléter l’impact croissant de l’IA
+- Développer un modèle prédictif pour anticiper l’évolution future de l’emploi
 
 Ce projet démontre la capacité à :
 
-- Travailler avec des datasets volumineux (36M+ lignes brutes)
-- Utiliser Spark et Delta Lake dans un environnement Databricks
-- Concevoir une pipeline reproductible et scalable
-- Transformer des données brutes en insights exploitables
-- Intégrer l’analyse prédictive dans une architecture data moderne
+- Manipuler des volumes importants de données avec Spark
+- Concevoir une architecture data scalable et reproductible
+- Transformer des données brutes en insights décisionnels
+- Intégrer l’analyse prédictive dans une démarche d’ingénierie des données
 
-En résumé, ce projet illustre une approche complète de l’ingénierie des données combinée à l’analyse avancée et au Machine Learning.
+En résumé, il illustre une approche intégrée combinant ingénierie des données, analyse économique et modélisation prédictive.
 
 ---
 
