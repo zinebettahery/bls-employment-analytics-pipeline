@@ -169,10 +169,10 @@ Repos → Add Repo → GitHub
 ### Étape 2 : Lancer les scripts
 
 ```python
-%run ./src/ingestion/download_cew_data
-%run ./src/exploration/eda
-%run ./src/transformation/silver_cleaning
-%run ./src/transformation/kpis
+%run ./ingestion/download_cew_data
+%run ./exploration/eda
+%run ./transformation/silver_cleaning
+%run ./transformation/kpis
 ```
 ---
 ### 5. Technologies utilisées
