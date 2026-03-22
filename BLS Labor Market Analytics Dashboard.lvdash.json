@@ -1,0 +1,1471 @@
+{
+  "datasets": [
+    {
+      "name": "2d52a4d0",
+      "displayName": "Total employment",
+      "queryLines": [
+        "SELECT SUM(annual_avg_emplvl)\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')"
+      ]
+    },
+    {
+      "name": "f79ea5c7",
+      "displayName": "Employment Trend by Year and Sector",
+      "queryLines": [
+        "SELECT \r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  SUM(annual_avg_emplvl) AS total_employment\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type;"
+      ]
+    },
+    {
+      "name": "a64aaa27",
+      "displayName": "YoY Employment Growth",
+      "queryLines": [
+        "SELECT \r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  AVG(oty_annual_avg_emplvl_pct_chg) AS employment_growth_pct\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year;"
+      ]
+    },
+    {
+      "name": "0c0b8f53",
+      "displayName": "Répartition Privé vs Public 2024",
+      "queryLines": [
+        "SELECT\r\n",
+        "  sector_type,\r\n",
+        "  SUM(annual_avg_emplvl) AS emp,\r\n",
+        "  ROUND(SUM(annual_avg_emplvl) * 100.0 /\r\n",
+        "    SUM(SUM(annual_avg_emplvl)) OVER(), 1)\r\n",
+        "    AS pct\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')\r\n",
+        "  AND year = (SELECT MAX(year)\r\n",
+        "    FROM bls_cew.silver.cleaned_data)\r\n",
+        "GROUP BY sector_type"
+      ],
+      "catalog": "bls_cew",
+      "schema": "silver"
+    },
+    {
+      "name": "989a9639",
+      "displayName": "Établissements actifs par secteur",
+      "queryLines": [
+        "SELECT\r\n",
+        "  year, sector_type,\r\n",
+        "  SUM(annual_avg_estabs) AS total_estabs\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "15a32a0e",
+      "displayName": "Emploi privé",
+      "queryLines": [
+        " SELECT\r\n",
+        " SUM(annual_avg_emplvl) AS total_employment\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type = 'Private'\r\n",
+        "  AND year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
+        "  AND is_disclosed = true"
+      ]
+    },
+    {
+      "name": "f732998b",
+      "displayName": "Emploi public",
+      "queryLines": [
+        "SELECT\r\n",
+        "  SUM(annual_avg_emplvl) AS total_employment\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type = 'Public'\r\n",
+        "  AND year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
+        "  AND is_disclosed = true"
+      ]
+    },
+    {
+      "name": "6e5f0f99",
+      "displayName": "Nb industries",
+      "queryLines": [
+        "SELECT\r\n",
+        "  COUNT(DISTINCT industry_code) AS nb_industries\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private', 'Public')\r\n",
+        "  AND year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)"
+      ]
+    },
+    {
+      "name": "7df442f9",
+      "displayName": "salaire moyen annual",
+      "queryLines": [
+        "SELECT \r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private', 'Public')\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "159b4295",
+      "displayName": "Top Industries Employment and Pay Analysis Summary",
+      "queryLines": [
+        "SELECT\r\n",
+        "  industry_code,\r\n",
+        "  industry_name,\r\n",
+        "  sector_type,\r\n",
+        "  SUM(annual_avg_emplvl)           AS total_employment,\r\n",
+        "  ROUND(AVG(avg_annual_pay), 0)      AS avg_pay,\r\n",
+        "  ROUND(\r\n",
+        "    SUM(annual_avg_emplvl) * 100.0 /\r\n",
+        "    SUM(SUM(annual_avg_emplvl)) OVER()\r\n",
+        "  , 1)                                 AS pct_total\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
+        "  AND sector_type IN ('Private', 'Public')\r\n",
+        "  AND is_disclosed = true\r\n",
+        "GROUP BY industry_code, industry_name, sector_type\r\n",
+        "ORDER BY total_employment DESC\r\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "e64f4121",
+      "displayName": "Emploi par période COVID",
+      "queryLines": [
+        "SELECT\r\n",
+        "  covid_period,\r\n",
+        "  SUM(annual_avg_emplvl) AS total_emp\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY covid_period\r\n",
+        "ORDER BY covid_period"
+      ]
+    },
+    {
+      "name": "0b5e319a",
+      "displayName": "Annual Pay Trends by Year and Sector Type",
+      "queryLines": [
+        "SELECT year, sector_type,\r\n",
+        "AVG(avg_annual_pay) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY year, sector_type"
+      ]
+    },
+    {
+      "name": "bc66868f",
+      "displayName": "Top Industry Salaries",
+      "queryLines": [
+        "SELECT industry_name,\r\n",
+        "AVG(avg_annual_pay) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY avg_salary DESC\r\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "cb5ab9af",
+      "displayName": "Croissance annuelle des salaires",
+      "queryLines": [
+        "SELECT \r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  ROUND(AVG(oty_avg_annual_pay_pct_chg), 2) AS wage_growth_pct\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private', 'Public')\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "49c4cd98",
+      "displayName": "Évolution emploi 2018–2022",
+      "queryLines": [
+        "\r\n",
+        "SELECT\r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  SUM(annual_avg_emplvl) AS emp\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE year BETWEEN 2018 AND 2022\r\n",
+        "  AND sector_type IN ('Private', 'Public')\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "56bd35d8",
+      "displayName": "Industries les plus touchées en 2020",
+      "queryLines": [
+        "WITH yearly AS (\r\n",
+        "  SELECT\r\n",
+        "    industry_code,\r\n",
+        "    industry_name,\r\n",
+        "    year,\r\n",
+        "    SUM(annual_avg_emplvl) AS emp\r\n",
+        "  FROM bls_cew.silver.cleaned_data\r\n",
+        "  WHERE year IN (2019, 2020)\r\n",
+        "    AND industry_name IS NOT NULL\r\n",
+        "  GROUP BY industry_code, industry_name, year\r\n",
+        "),\r\n",
+        "pivoted AS (\r\n",
+        "  SELECT\r\n",
+        "    industry_code,\r\n",
+        "    industry_name,\r\n",
+        "    MAX(CASE WHEN year = 2019 THEN emp END) AS emp_2019,\r\n",
+        "    MAX(CASE WHEN year = 2020 THEN emp END) AS emp_2020\r\n",
+        "  FROM yearly\r\n",
+        "  GROUP BY industry_code, industry_name\r\n",
+        ")\r\n",
+        "SELECT\r\n",
+        "  industry_code,\r\n",
+        "  industry_name,\r\n",
+        "  emp_2019,\r\n",
+        "  emp_2020,\r\n",
+        "  ROUND(((emp_2020 - emp_2019) / emp_2019) * 100, 2) AS drop_pct\r\n",
+        "FROM pivoted\r\n",
+        "WHERE emp_2019 IS NOT NULL\r\n",
+        "  AND emp_2020 IS NOT NULL\r\n",
+        "ORDER BY drop_pct ASC\r\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "06df2723",
+      "displayName": "growing industries",
+      "queryLines": [
+        "SELECT industry_name,\r\n",
+        "AVG(oty_annual_avg_emplvl_pct_chg) AS growth\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY growth DESC\r\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "8e9852fc",
+      "displayName": "Declining industries",
+      "queryLines": [
+        "SELECT industry_name,\r\n",
+        "AVG(oty_annual_avg_emplvl_pct_chg) AS growth\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY growth ASC\r\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "8c0bd74c",
+      "displayName": "Growth vs Salary",
+      "queryLines": [
+        "SELECT industry_name,\r\n",
+        "AVG(avg_annual_pay) AS salary,\r\n",
+        "AVG(oty_annual_avg_emplvl_pct_chg) AS growth\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY industry_name"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "340c2082",
+      "displayName": "Vue d'ensemble",
+      "layout": [
+        {
+          "widget": {
+            "name": "a4d4232f",
+            "multilineTextboxSpec": {
+              "lines": [
+                "#### <span style=\"font-size: 20px;font-family: Tahoma;\">**Employment Trend by Year and Sector**</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "evolution-emploi-secteur-2015-2024",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "f79ea5c7",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "total_employment",
+                      "expression": "`total_employment`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Évolution emploi total par secteur (2015–2024)\n"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_employment",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "extra": [
+                  {
+                    "fieldName": "sector_type"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "croissance-emploi-oty",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "a64aaa27",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "employment_growth_pct",
+                      "expression": "`employment_growth_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Croissance emploi OTY %\n"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "axis": {
+                    "labelAngle": 0
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "employment_growth_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "extra": [
+                  {
+                    "fieldName": "sector_type"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "repartition-prive-vs-public-2024",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0c0b8f53",
+                  "fields": [
+                    {
+                      "name": "emp",
+                      "expression": "`emp`"
+                    },
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Répartition Privé vs Public 2024\n"
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "emp",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "etablissements-actifs-par-secteur",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "989a9639",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "sum(total_estabs)",
+                      "expression": "SUM(`total_estabs`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Établissements actifs par secteur\n"
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_estabs)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 7,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "emploi-prive",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "15a32a0e",
+                  "fields": [
+                    {
+                      "name": "total_employment",
+                      "expression": "`total_employment`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Emploi privé "
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_employment"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "emploi-public",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "f732998b",
+                  "fields": [
+                    {
+                      "name": "total_employment",
+                      "expression": "`total_employment`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Emploi public"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_employment"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "salaire-moyen",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7df442f9",
+                  "fields": [
+                    {
+                      "name": "avg_pay",
+                      "expression": "`avg_pay`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Salaire moyen privé"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg_pay",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "total-employment",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2d52a4d0",
+                  "fields": [
+                    {
+                      "name": "sum(annual_avg_emplvl)",
+                      "expression": "`sum(annual_avg_emplvl)`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Employment"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(annual_avg_emplvl)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "4b7763c5",
+      "displayName": "Salaire",
+      "layout": [
+        {
+          "widget": {
+            "name": "salaire-moyen-annuel-prive-vs-public-2015-2024",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0b5e319a",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "avg_salary",
+                      "expression": "`avg_salary`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Salaire moyen annuel par secteur"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg_salary",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top-10-industries-by-average-salary",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bc66868f",
+                  "fields": [
+                    {
+                      "name": "avg_salary",
+                      "expression": "`avg_salary`"
+                    },
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 10 industries by average salary\n"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "avg_salary",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "industry_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "croissance-annuelle-des-salaires",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "cb5ab9af",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "wage_growth_pct",
+                      "expression": "`wage_growth_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Croissance annuelle des salaires"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "wage_growth_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "dbe4f740",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "55de3d8e",
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {},
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "7b85d43e",
+      "displayName": "Top industries",
+      "layout": [
+        {
+          "widget": {
+            "name": "top-15-industries-par-emploi-total-derniere-annee",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "159b4295",
+                  "fields": [
+                    {
+                      "name": "industry_code",
+                      "expression": "`industry_code`"
+                    },
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    },
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "total_employment",
+                      "expression": "`total_employment`"
+                    },
+                    {
+                      "name": "avg_pay",
+                      "expression": "`avg_pay`"
+                    },
+                    {
+                      "name": "pct_total",
+                      "expression": "`pct_total`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 15 industries par emploi total — dernière année\n"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "industry_code"
+                  },
+                  {
+                    "fieldName": "industry_name"
+                  },
+                  {
+                    "fieldName": "sector_type"
+                  },
+                  {
+                    "fieldName": "total_employment"
+                  },
+                  {
+                    "fieldName": "avg_pay"
+                  },
+                  {
+                    "fieldName": "pct_total"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "28fd393c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "159b4295",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "total_employment",
+                      "expression": "`total_employment`"
+                    },
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_employment",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "industry_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "Private",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 1
+                        }
+                      },
+                      {
+                        "value": "Public",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "119b7121",
+      "displayName": "Covid Impact",
+      "layout": [
+        {
+          "widget": {
+            "name": "emploi-par-periode-covid",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e64f4121",
+                  "fields": [
+                    {
+                      "name": "covid_period",
+                      "expression": "`covid_period`"
+                    },
+                    {
+                      "name": "total_emp",
+                      "expression": "`total_emp`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Emploi par période COVID"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "covid_period",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "pre_covid",
+                        "choc",
+                        "reprise",
+                        "post_covid"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "total_emp",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "7c69ef27",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "49c4cd98",
+                  "fields": [
+                    {
+                      "name": "sector_type",
+                      "expression": "`sector_type`"
+                    },
+                    {
+                      "name": "year",
+                      "expression": "`year`"
+                    },
+                    {
+                      "name": "emp",
+                      "expression": "`emp`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Emploi absolu 2018–2022\n"
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "emp",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "sector_type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top-10-industries-les-plus-touchees-en-2020",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "56bd35d8",
+                  "fields": [
+                    {
+                      "name": "industry_code",
+                      "expression": "`industry_code`"
+                    },
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    },
+                    {
+                      "name": "emp_2019",
+                      "expression": "`emp_2019`"
+                    },
+                    {
+                      "name": "emp_2020",
+                      "expression": "`emp_2020`"
+                    },
+                    {
+                      "name": "drop_pct",
+                      "expression": "`drop_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 10 industries les plus touchées en 2020"
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "industry_code"
+                  },
+                  {
+                    "fieldName": "industry_name"
+                  },
+                  {
+                    "fieldName": "emp_2019"
+                  },
+                  {
+                    "fieldName": "emp_2020"
+                  },
+                  {
+                    "fieldName": "drop_pct"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "f5f49345",
+      "displayName": "AI impact",
+      "layout": [
+        {
+          "widget": {
+            "name": "les-secteurs-en-croissance",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "06df2723",
+                  "fields": [
+                    {
+                      "name": "growth",
+                      "expression": "`growth`"
+                    },
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Les secteurs en croissance"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "growth",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "industry_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "les-secteurs-croissance-1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8e9852fc",
+                  "fields": [
+                    {
+                      "name": "growth",
+                      "expression": "`growth`"
+                    },
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Les secteurs en déclin\n"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "growth",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "industry_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "9b682583",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8c0bd74c",
+                  "fields": [
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    },
+                    {
+                      "name": "growth",
+                      "expression": "`growth`"
+                    },
+                    {
+                      "name": "salary",
+                      "expression": "`salary`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "growth",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "salary",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "industry_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 8,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "genieSpace": {
+      "isEnabled": true,
+      "enablementMode": "ENABLED"
+    },
+    "applyModeEnabled": false
+  }
+}
