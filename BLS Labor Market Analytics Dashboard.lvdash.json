@@ -31,6 +31,7 @@
         "  sector_type,\r\n",
         "  AVG(oty_annual_avg_emplvl_pct_chg) AS employment_growth_pct\r\n",
         "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private', 'Public')\r\n",
         "GROUP BY year, sector_type\r\n",
         "ORDER BY year;"
       ]
@@ -39,16 +40,12 @@
       "name": "0c0b8f53",
       "displayName": "Répartition Privé vs Public 2024",
       "queryLines": [
-        "SELECT\r\n",
+        "SELECT \r\n",
         "  sector_type,\r\n",
-        "  SUM(annual_avg_emplvl) AS emp,\r\n",
-        "  ROUND(SUM(annual_avg_emplvl) * 100.0 /\r\n",
-        "    SUM(SUM(annual_avg_emplvl)) OVER(), 1)\r\n",
-        "    AS pct\r\n",
+        "  SUM(annual_avg_emplvl) AS total_emp\r\n",
         "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type IN ('Private','Public')\r\n",
-        "  AND year = (SELECT MAX(year)\r\n",
-        "    FROM bls_cew.silver.cleaned_data)\r\n",
+        "WHERE year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
+        "  AND sector_type IN ('Private','Public')\r\n",
         "GROUP BY sector_type"
       ],
       "catalog": "bls_cew",
@@ -71,35 +68,20 @@
       "name": "15a32a0e",
       "displayName": "Emploi privé",
       "queryLines": [
-        " SELECT\r\n",
-        " SUM(annual_avg_emplvl) AS total_employment\r\n",
+        "SELECT \r\n",
+        "  SUM(annual_avg_emplvl) AS private_employment\r\n",
         "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type = 'Private'\r\n",
-        "  AND year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
-        "  AND is_disclosed = true"
+        "WHERE sector_type = 'Private'"
       ]
     },
     {
       "name": "f732998b",
       "displayName": "Emploi public",
       "queryLines": [
-        "SELECT\r\n",
-        "  SUM(annual_avg_emplvl) AS total_employment\r\n",
+        "SELECT \r\n",
+        "  SUM(annual_avg_emplvl) AS public_employment\r\n",
         "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type = 'Public'\r\n",
-        "  AND year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
-        "  AND is_disclosed = true"
-      ]
-    },
-    {
-      "name": "6e5f0f99",
-      "displayName": "Nb industries",
-      "queryLines": [
-        "SELECT\r\n",
-        "  COUNT(DISTINCT industry_code) AS nb_industries\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type IN ('Private', 'Public')\r\n",
-        "  AND year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)"
+        "WHERE sector_type = 'Public'"
       ]
     },
     {
@@ -114,6 +96,91 @@
         "WHERE sector_type IN ('Private', 'Public')\r\n",
         "GROUP BY year, sector_type\r\n",
         "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "6e5f0f99",
+      "displayName": "Number of Industries",
+      "queryLines": [
+        "SELECT \r\n",
+        "  COUNT(DISTINCT industry_name) AS nb_industries\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE industry_name IS NOT NULL"
+      ]
+    },
+    {
+      "name": "0b5e319a",
+      "displayName": "Annual Pay Trends by Year and Sector Type",
+      "queryLines": [
+        "SELECT \r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "cb5ab9af",
+      "displayName": "Croissance annuelle des salaires",
+      "queryLines": [
+        "SELECT \r\n",
+        "  year,\r\n",
+        "  sector_type,\r\n",
+        "  ROUND(AVG(oty_avg_annual_pay_pct_chg), 2) AS wage_growth_pct\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private', 'Public')\r\n",
+        "GROUP BY year, sector_type\r\n",
+        "ORDER BY year, sector_type"
+      ]
+    },
+    {
+      "name": "b35e95a2",
+      "displayName": "salaire moyen privé",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary_private\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type = 'Private'"
+      ]
+    },
+    {
+      "name": "749ce3fc",
+      "displayName": "salaire moyen public",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary_public\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type = 'Public'"
+      ]
+    },
+    {
+      "name": "bc66868f",
+      "displayName": "Top Industry Salaries",
+      "queryLines": [
+        "SELECT industry_name,\r\n",
+        "AVG(avg_annual_pay) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY avg_salary DESC\r\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "73b69242",
+      "displayName": "wage gap",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(\r\n",
+        "    AVG(CASE WHEN sector_type='Private' THEN avg_annual_pay END) -\r\n",
+        "    AVG(CASE WHEN sector_type='Public' THEN avg_annual_pay END),\r\n",
+        "    2\r\n",
+        "  ) AS wage_gap\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')"
       ]
     },
     {
@@ -140,6 +207,30 @@
       ]
     },
     {
+      "name": "fc53cec2",
+      "displayName": "Top industry",
+      "queryLines": [
+        "SELECT industry_name\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE industry_name IS NOT NULL\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY SUM(annual_avg_emplvl) DESC\r\n",
+        "LIMIT 1"
+      ]
+    },
+    {
+      "name": "d8594bfd",
+      "displayName": "Min industry",
+      "queryLines": [
+        "SELECT industry_name\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE industry_name IS NOT NULL\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY SUM(annual_avg_emplvl) ASC\r\n",
+        "LIMIT 1"
+      ]
+    },
+    {
       "name": "e64f4121",
       "displayName": "Emploi par période COVID",
       "queryLines": [
@@ -149,43 +240,6 @@
         "FROM bls_cew.silver.cleaned_data\r\n",
         "GROUP BY covid_period\r\n",
         "ORDER BY covid_period"
-      ]
-    },
-    {
-      "name": "0b5e319a",
-      "displayName": "Annual Pay Trends by Year and Sector Type",
-      "queryLines": [
-        "SELECT year, sector_type,\r\n",
-        "AVG(avg_annual_pay) AS avg_salary\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "GROUP BY year, sector_type"
-      ]
-    },
-    {
-      "name": "bc66868f",
-      "displayName": "Top Industry Salaries",
-      "queryLines": [
-        "SELECT industry_name,\r\n",
-        "AVG(avg_annual_pay) AS avg_salary\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)\r\n",
-        "GROUP BY industry_name\r\n",
-        "ORDER BY avg_salary DESC\r\n",
-        "LIMIT 10"
-      ]
-    },
-    {
-      "name": "cb5ab9af",
-      "displayName": "Croissance annuelle des salaires",
-      "queryLines": [
-        "SELECT \r\n",
-        "  year,\r\n",
-        "  sector_type,\r\n",
-        "  ROUND(AVG(oty_avg_annual_pay_pct_chg), 2) AS wage_growth_pct\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type IN ('Private', 'Public')\r\n",
-        "GROUP BY year, sector_type\r\n",
-        "ORDER BY year, sector_type"
       ]
     },
     {
@@ -274,6 +328,68 @@
         "AVG(oty_annual_avg_emplvl_pct_chg) AS growth\r\n",
         "FROM bls_cew.silver.cleaned_data\r\n",
         "GROUP BY industry_name"
+      ]
+    },
+    {
+      "name": "3efeee06",
+      "displayName": "Average Annual Pay by Sector Type Summary",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')"
+      ]
+    },
+    {
+      "name": "fe63d6a0",
+      "displayName": "Employment Drop 2020",
+      "queryLines": [
+        "WITH data AS (\r\n",
+        "  SELECT year, SUM(annual_avg_emplvl) AS emp\r\n",
+        "  FROM bls_cew.silver.cleaned_data\r\n",
+        "  GROUP BY year\r\n",
+        ")\r\n",
+        "SELECT \r\n",
+        "  ROUND(\r\n",
+        "    ((MAX(CASE WHEN year=2020 THEN emp END) -\r\n",
+        "      MAX(CASE WHEN year=2019 THEN emp END))\r\n",
+        "    / MAX(CASE WHEN year=2019 THEN emp END)) * 100,\r\n",
+        "    2\r\n",
+        "  ) AS drop_pct\r\n",
+        "FROM data"
+      ]
+    },
+    {
+      "name": "9a456b63",
+      "displayName": "Fastest Growing Industry",
+      "queryLines": [
+        "SELECT industry_name\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE industry_name IS NOT NULL\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY AVG(oty_annual_avg_emplvl_pct_chg) DESC\r\n",
+        "LIMIT 1"
+      ]
+    },
+    {
+      "name": "f6141979",
+      "displayName": "Most Declining Industry",
+      "queryLines": [
+        "SELECT industry_name\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE industry_name IS NOT NULL\r\n",
+        "GROUP BY industry_name\r\n",
+        "ORDER BY AVG(oty_annual_avg_emplvl_pct_chg) ASC\r\n",
+        "LIMIT 1"
+      ]
+    },
+    {
+      "name": "fb16bd77",
+      "displayName": "Average Growth",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(AVG(oty_annual_avg_emplvl_pct_chg),2) AS avg_growth\r\n",
+        "FROM bls_cew.silver.cleaned_data"
       ]
     }
   ],
@@ -445,8 +561,8 @@
                   "datasetName": "0c0b8f53",
                   "fields": [
                     {
-                      "name": "emp",
-                      "expression": "`emp`"
+                      "name": "total_emp",
+                      "expression": "`total_emp`"
                     },
                     {
                       "name": "sector_type",
@@ -461,12 +577,12 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Répartition Privé vs Public 2024\n"
+                "title": "Répartition Privé vs Public (last year)\n"
               },
               "widgetType": "pie",
               "encodings": {
                 "angle": {
-                  "fieldName": "emp",
+                  "fieldName": "total_emp",
                   "scale": {
                     "type": "quantitative"
                   }
@@ -505,11 +621,11 @@
                       "expression": "`year`"
                     },
                     {
-                      "name": "sum(total_estabs)",
-                      "expression": "SUM(`total_estabs`)"
+                      "name": "total_estabs",
+                      "expression": "`total_estabs`"
                     }
                   ],
-                  "disaggregated": false
+                  "disaggregated": true
                 }
               }
             ],
@@ -528,7 +644,7 @@
                   }
                 },
                 "y": {
-                  "fieldName": "sum(total_estabs)",
+                  "fieldName": "total_estabs",
                   "scale": {
                     "type": "quantitative"
                   }
@@ -559,8 +675,8 @@
                   "datasetName": "15a32a0e",
                   "fields": [
                     {
-                      "name": "total_employment",
-                      "expression": "`total_employment`"
+                      "name": "private_employment",
+                      "expression": "`private_employment`"
                     }
                   ],
                   "disaggregated": true
@@ -576,7 +692,7 @@
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "total_employment"
+                  "fieldName": "private_employment"
                 }
               }
             }
@@ -598,8 +714,8 @@
                   "datasetName": "f732998b",
                   "fields": [
                     {
-                      "name": "total_employment",
-                      "expression": "`total_employment`"
+                      "name": "public_employment",
+                      "expression": "`public_employment`"
                     }
                   ],
                   "disaggregated": true
@@ -615,61 +731,13 @@
               "widgetType": "counter",
               "encodings": {
                 "value": {
-                  "fieldName": "total_employment"
+                  "fieldName": "public_employment"
                 }
               }
             }
           },
           "position": {
             "x": 6,
-            "y": 1,
-            "width": 3,
-            "height": 1
-          }
-        },
-        {
-          "widget": {
-            "name": "salaire-moyen",
-            "queries": [
-              {
-                "name": "main_query",
-                "query": {
-                  "datasetName": "7df442f9",
-                  "fields": [
-                    {
-                      "name": "avg_pay",
-                      "expression": "`avg_pay`"
-                    }
-                  ],
-                  "disaggregated": true
-                }
-              }
-            ],
-            "spec": {
-              "version": 2,
-              "frame": {
-                "showTitle": true,
-                "title": "Salaire moyen privé"
-              },
-              "widgetType": "counter",
-              "encodings": {
-                "value": {
-                  "fieldName": "avg_pay",
-                  "format": {
-                    "type": "number-currency",
-                    "currencyCode": "USD",
-                    "abbreviation": "compact",
-                    "decimalPlaces": {
-                      "type": "max",
-                      "places": 2
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "position": {
-            "x": 9,
             "y": 1,
             "width": 3,
             "height": 1
@@ -709,6 +777,45 @@
           },
           "position": {
             "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "be46b2e9",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "7df442f9",
+                  "fields": [
+                    {
+                      "name": "avg_salary",
+                      "expression": "`avg_salary`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Salaire moyen"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg_salary"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
             "y": 1,
             "width": 3,
             "height": 1
@@ -779,9 +886,9 @@
           },
           "position": {
             "x": 0,
-            "y": 0,
+            "y": 1,
             "width": 6,
-            "height": 6
+            "height": 5
           }
         },
         {
@@ -893,9 +1000,126 @@
           },
           "position": {
             "x": 6,
-            "y": 0,
+            "y": 1,
             "width": 6,
-            "height": 6
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "salaire-moyen-prive",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "b35e95a2",
+                  "fields": [
+                    {
+                      "name": "sum(avg_salary_private)",
+                      "expression": "SUM(`avg_salary_private`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Salaire moyen privé"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(avg_salary_private)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "641f4dcd",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "749ce3fc",
+                  "fields": [
+                    {
+                      "name": "sum(avg_salary_public)",
+                      "expression": "SUM(`avg_salary_public`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Salaire moyen public"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(avg_salary_public)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "30972257",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "73b69242",
+                  "fields": [
+                    {
+                      "name": "sum(wage_gap)",
+                      "expression": "SUM(`wage_gap`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Wage gap"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(wage_gap)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 4,
+            "height": 1
           }
         }
       ],
@@ -1004,7 +1228,7 @@
           },
           "position": {
             "x": 0,
-            "y": 9,
+            "y": 10,
             "width": 12,
             "height": 10
           }
@@ -1078,9 +1302,126 @@
           },
           "position": {
             "x": 0,
-            "y": 0,
+            "y": 1,
             "width": 12,
             "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "number-of-industries",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "6e5f0f99",
+                  "fields": [
+                    {
+                      "name": "sum(nb_industries)",
+                      "expression": "SUM(`nb_industries`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Number of industries"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(nb_industries)"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "9ecaf8ee",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fc53cec2",
+                  "fields": [
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Top Industry"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "industry_name"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "8c072e48",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d8594bfd",
+                  "fields": [
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Min Industry"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "industry_name"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 4,
+            "height": 1
           }
         }
       ],
@@ -1147,7 +1488,7 @@
           },
           "position": {
             "x": 0,
-            "y": 0,
+            "y": 1,
             "width": 6,
             "height": 6
           }
@@ -1209,7 +1550,7 @@
           },
           "position": {
             "x": 6,
-            "y": 0,
+            "y": 1,
             "width": 6,
             "height": 6
           }
@@ -1278,9 +1619,48 @@
           },
           "position": {
             "x": 0,
-            "y": 6,
+            "y": 7,
             "width": 12,
             "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "employment-drop-2020",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fe63d6a0",
+                  "fields": [
+                    {
+                      "name": "drop_pct",
+                      "expression": "`drop_pct`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Emploment Drop 2020"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "drop_pct"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 1
           }
         }
       ],
@@ -1409,12 +1789,12 @@
                       "expression": "`industry_name`"
                     },
                     {
-                      "name": "growth",
-                      "expression": "`growth`"
-                    },
-                    {
                       "name": "salary",
                       "expression": "`salary`"
+                    },
+                    {
+                      "name": "growth",
+                      "expression": "`growth`"
                     }
                   ],
                   "disaggregated": true
@@ -1426,13 +1806,13 @@
               "widgetType": "scatter",
               "encodings": {
                 "x": {
-                  "fieldName": "growth",
+                  "fieldName": "salary",
                   "scale": {
                     "type": "quantitative"
                   }
                 },
                 "y": {
-                  "fieldName": "salary",
+                  "fieldName": "growth",
                   "scale": {
                     "type": "quantitative"
                   }
@@ -1451,6 +1831,123 @@
             "y": 0,
             "width": 8,
             "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "fastest-growing-industry",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9a456b63",
+                  "fields": [
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Fastest Growing Industry"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "industry_name"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "most-declining-industry",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "f6141979",
+                  "fields": [
+                    {
+                      "name": "industry_name",
+                      "expression": "`industry_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Most Declining Industry"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "industry_name"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "average-growth",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fb16bd77",
+                  "fields": [
+                    {
+                      "name": "avg_growth",
+                      "expression": "`avg_growth`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Growth"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg_growth"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 4,
+            "width": 4,
+            "height": 2
           }
         }
       ],
