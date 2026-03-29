@@ -1,11 +1,11 @@
 
 ----------------------------------------PAGE 1: EMPLOYMENT TRENDS----------------------------------------
--- Total employment 
+-- Emploi total 
 SELECT SUM(annual_avg_emplvl)
 FROM bls_cew.silver.cleaned_data
 WHERE sector_type IN ('Private','Public')
 
--- Total employment by year and sector type
+-- Évolution de l’emploi par année et par secteur (Public vs Privé)
 SELECT 
   year,
   sector_type,
@@ -14,7 +14,7 @@ FROM bls_cew.silver.cleaned_data
 GROUP BY year, sector_type
 ORDER BY year, sector_type;
 
--- Average annual percentage change in employment by year and sector type
+-- Taux de croissance annuel moyen de l’emploi (%)
 SELECT 
   year,
   sector_type,
@@ -24,7 +24,7 @@ WHERE sector_type IN ('Private', 'Public')
 GROUP BY year, sector_type
 ORDER BY year;
 
--- Total employment by sector type for the most recent year
+-- Répartition de l’emploi par secteur (année la plus récente)
 SELECT 
   sector_type,
   SUM(annual_avg_emplvl) AS total_emp
@@ -33,7 +33,7 @@ WHERE year = (SELECT MAX(year) FROM bls_cew.silver.cleaned_data)
   AND sector_type IN ('Private','Public')
 GROUP BY sector_type
 
--- Total establishments by year and sector type
+-- Nombre total d’établissements par année et par secteur
 SELECT
   year, sector_type,
   SUM(annual_avg_estabs) AS total_estabs
@@ -42,19 +42,19 @@ WHERE sector_type IN ('Private','Public')
 GROUP BY year, sector_type
 ORDER BY year, sector_type
 
--- Average annual percentage change in establishments by year and sector type
+-- Emploi total dans le secteur privé
 SELECT 
   SUM(annual_avg_emplvl) AS private_employment
 FROM bls_cew.silver.cleaned_data
 WHERE sector_type = 'Private'
 
--- Average annual percentage change in establishments by year and sector type
+-- Emploi total dans le secteur public
 SELECT 
   SUM(annual_avg_emplvl) AS public_employment
 FROM bls_cew.silver.cleaned_data
 WHERE sector_type = 'Public'
 
--- Average annual pay by year and sector type
+-- Salaire annuel moyen par année et par secteur
 SELECT 
   year,
   sector_type,
@@ -67,19 +67,19 @@ ORDER BY year, sector_type
 
 ----------------------------------------PAGE 2: SALARY TRENDS----------------------------------------
 
--- Average annual pay for private sector
+-- Salaire moyen annuel – secteur privé
 SELECT 
   ROUND(AVG(avg_annual_pay), 2) AS avg_salary_private
 FROM bls_cew.silver.cleaned_data
 WHERE sector_type = 'Private'
 
--- Average annual pay for public sector
+-- Salaire moyen annuel – secteur public
 SELECT 
   ROUND(AVG(avg_annual_pay), 2) AS avg_salary_public
 FROM bls_cew.silver.cleaned_data
 WHERE sector_type = 'Public'
 
--- Wage gap between private and public sectors
+-- Écart salarial entre secteur privé et public (Wage Gap)
 SELECT 
   ROUND(
     AVG(CASE WHEN sector_type='Private' THEN avg_annual_pay END) -
@@ -89,7 +89,7 @@ SELECT
 FROM bls_cew.silver.cleaned_data
 WHERE sector_type IN ('Private','Public')
 
--- Average annual pay by year and sector type
+-- Évolution du salaire moyen par année et par secteur
 SELECT 
   year,
   sector_type,
@@ -99,7 +99,7 @@ WHERE sector_type IN ('Private', 'Public')
 GROUP BY year, sector_type
 ORDER BY year, sector_typeA
 
--- Average annual percentage change in pay by year and sector type
+-- Taux de croissance annuel des salaires (%)
 SELECT 
   year,
   sector_type,
@@ -109,7 +109,7 @@ WHERE sector_type IN ('Private', 'Public')
 GROUP BY year, sector_type
 ORDER BY year, sector_type
 
--- Average annual pay by industry for the most recent year
+-- Top industries par salaire moyen (année récente)
 SELECT industry_name,
 AVG(avg_annual_pay) AS avg_salary
 FROM bls_cew.silver.cleaned_data
@@ -120,14 +120,14 @@ LIMIT 10
 
 --------------------------------PAGE 3: INDUSTRY ANALYSIS----------------------------------------
 
--- Number of unique industries in the dataset
+-- Nombre total d’industries distinctes
 SELECT 
   COUNT(DISTINCT industry_name) AS nb_industries
 FROM bls_cew.silver.cleaned_data
 WHERE industry_name IS NOT NULL
 
 
--- Industry with the highest total employment
+-- Industrie avec le plus faible niveau d’emploi
 SELECT industry_name
 FROM bls_cew.silver.cleaned_data
 WHERE industry_name IS NOT NULL
@@ -135,7 +135,7 @@ GROUP BY industry_name
 ORDER BY SUM(annual_avg_emplvl) ASC
 LIMIT 1
 
--- Industry with the lowest total employment
+-- Industrie avec le plus fort niveau d’emploi
 SELECT industry_name
 FROM bls_cew.silver.cleaned_data
 WHERE industry_name IS NOT NULL
@@ -143,7 +143,7 @@ GROUP BY industry_name
 ORDER BY SUM(annual_avg_emplvl) DESC
 LIMIT 1
 
--- Top 15 industries by total employment for the most recent year
+-- Top 15 industries par emploi total (année récente)
 SELECT
   industry_code,
   industry_name,
@@ -164,7 +164,7 @@ LIMIT 15
 
 
 -------------------------------------- PAGE 4: COVID-19 IMPACT ANALYSIS--------------------------------------
--- Employment trends by COVID-19 period
+-- Évolution de l’emploi selon les périodes COVID
 SELECT
   covid_period,
   SUM(annual_avg_emplvl) AS total_emp
@@ -172,7 +172,7 @@ FROM bls_cew.silver.cleaned_data
 GROUP BY covid_period
 ORDER BY covid_period
 
--- Employment trends by year and sector type
+-- Évolution de l’emploi pendant la période COVID (2018–2022)
 SELECT
   year,
   sector_type,
@@ -204,7 +204,7 @@ pivoted AS (
   GROUP BY industry_code, industry_name
 )
 
--- Top 10 industries with the largest percentage drop in employment from 2019 to 2020
+-- Top industries les plus impactées par le COVID (baisse d’emploi)
 SELECT
   industry_code,
   industry_name,
@@ -223,7 +223,7 @@ WITH data AS (
   GROUP BY year
 )
 
--- Percentage drop in total employment from 2019 to 2020
+-- Variation globale de l’emploi entre 2019 et 2020 (%)
 SELECT
   ROUND(
     ((MAX(CASE WHEN year=2020 THEN emp END) -
@@ -236,14 +236,14 @@ FROM data
 
 
 -------------------------------------- PAGE 5: INDUSTRY GROWTH ANALYSIS--------------------------------------
--- Average annual pay and employment growth by industry
+-- Croissance de l’emploi et salaire moyen par industrie
 SELECT industry_name,
 AVG(avg_annual_pay) AS salary,
 AVG(oty_annual_avg_emplvl_pct_chg) AS growth
 FROM bls_cew.silver.cleaned_data
 GROUP BY industry_name
 
--- Industries with the highest average annual percentage change in employment
+-- Top industries avec la plus forte croissance d’emploi
 SELECT industry_name,
 AVG(oty_annual_avg_emplvl_pct_chg) AS growth
 FROM bls_cew.silver.cleaned_data
@@ -251,7 +251,7 @@ GROUP BY industry_name
 ORDER BY growth DESC
 LIMIT 10
 
--- Industries with the lowest average annual percentage change in employment
+-- Industries avec la plus faible croissance d’emploi
 SELECT industry_name,
 AVG(oty_annual_avg_emplvl_pct_chg) AS growth
 FROM bls_cew.silver.cleaned_data
@@ -259,7 +259,7 @@ GROUP BY industry_name
 ORDER BY growth ASC
 LIMIT 10
 
--- Industry with the highest average annual percentage change in employment
+-- Industrie avec la croissance maximale
 SELECT industry_name
 FROM bls_cew.silver.cleaned_data
 WHERE industry_name IS NOT NULL
@@ -267,7 +267,7 @@ GROUP BY industry_name
 ORDER BY AVG(oty_annual_avg_emplvl_pct_chg) DESC
 LIMIT 1
 
--- Industry with the lowest average annual percentage change in employment
+-- Industrie avec la croissance minimale
 SELECT industry_name
 FROM bls_cew.silver.cleaned_data
 WHERE industry_name IS NOT NULL
@@ -276,7 +276,7 @@ ORDER BY AVG(oty_annual_avg_emplvl_pct_chg) ASC
 LIMIT 1
 
 
--- Average annual percentage change in employment across all industries
+-- Croissance moyenne globale de l’emploi
 SELECT
   ROUND(AVG(oty_annual_avg_emplvl_pct_chg),2) AS avg_growth
 FROM bls_cew.silver.cleaned_data

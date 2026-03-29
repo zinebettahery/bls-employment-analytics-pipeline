@@ -444,7 +444,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Évolution emploi total par secteur (2015–2024)\n"
+                "title": "Évolution de l’emploi par année et par secteur (Public vs Privé)\n"
               },
               "widgetType": "line",
               "encodings": {
@@ -511,7 +511,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Croissance emploi OTY %\n"
+                "title": "Taux de croissance annuel moyen de l’emploi (%)"
               },
               "widgetType": "bar",
               "encodings": {
@@ -577,7 +577,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Répartition Privé vs Public (last year)\n"
+                "title": "Répartition de l’emploi par secteur (année la plus récente)"
               },
               "widgetType": "pie",
               "encodings": {
@@ -633,7 +633,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Établissements actifs par secteur\n"
+                "title": "Nombre total d’établissements par année et par secteur"
               },
               "widgetType": "area",
               "encodings": {
@@ -687,7 +687,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Emploi privé "
+                "title": "Emploi total dans le secteur privé "
               },
               "widgetType": "counter",
               "encodings": {
@@ -726,7 +726,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Emploi public"
+                "title": "Emploi total dans le secteur public"
               },
               "widgetType": "counter",
               "encodings": {
@@ -765,7 +765,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Total Employment"
+                "title": "Croissance moyenne globale de l’emploi"
               },
               "widgetType": "counter",
               "encodings": {
@@ -804,7 +804,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Salaire moyen"
+                "title": "Salaire annuel moyen par année et par secteur"
               },
               "widgetType": "counter",
               "encodings": {
@@ -859,7 +859,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Salaire moyen annuel par secteur"
+                "title": "Évolution du salaire moyen par année et par secteur"
               },
               "widgetType": "line",
               "encodings": {
@@ -917,7 +917,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Top 10 industries by average salary\n"
+                "title": "Top industries par salaire moyen (année récente)"
               },
               "widgetType": "bar",
               "encodings": {
@@ -973,7 +973,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Croissance annuelle des salaires"
+                "title": "Taux de croissance annuel des salaires (%)"
               },
               "widgetType": "bar",
               "encodings": {
@@ -1027,7 +1027,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Salaire moyen privé"
+                "title": "Salaire moyen annuel – secteur privé"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1066,7 +1066,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Salaire moyen public"
+                "title": "Salaire moyen annuel – secteur public"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1105,7 +1105,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Wage gap"
+                "title": "Écart salarial entre secteur privé et public (Wage Gap)"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1261,6 +1261,10 @@
             ],
             "spec": {
               "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Top 15 industries par emploi total (année récente)\n"
+              },
               "widgetType": "bar",
               "encodings": {
                 "x": {
@@ -1329,7 +1333,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Number of industries"
+                "title": "Nombre total d’industries distinctes"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1368,7 +1372,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Top Industry"
+                "title": "Industrie avec le plus faible niveau d’emploi"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1407,7 +1411,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Min Industry"
+                "title": "ndustrie avec le plus faible niveau d’emploi"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1458,7 +1462,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Emploi par période COVID"
+                "title": "Évolution de l’emploi pendant la période COVID (2018–2022)"
               },
               "widgetType": "bar",
               "encodings": {
@@ -1523,7 +1527,7 @@
               "version": 3,
               "frame": {
                 "showTitle": true,
-                "title": "Emploi absolu 2018–2022\n"
+                "title": "Évolution de l’emploi selon les périodes COVID"
               },
               "widgetType": "line",
               "encodings": {
@@ -1646,7 +1650,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Emploment Drop 2020"
+                "title": "Variation globale de l’emploi entre 2019 et 2020 (%)"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1659,7 +1663,7 @@
           "position": {
             "x": 0,
             "y": 0,
-            "width": 6,
+            "width": 12,
             "height": 1
           }
         }
@@ -1803,6 +1807,10 @@
             ],
             "spec": {
               "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Croissance de l’emploi et salaire moyen par industrie"
+              },
               "widgetType": "scatter",
               "encodings": {
                 "x": {
@@ -1855,7 +1863,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Fastest Growing Industry"
+                "title": "Industrie avec la croissance maximale"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1894,7 +1902,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Most Declining Industry"
+                "title": "Industrie avec la croissance minimale"
               },
               "widgetType": "counter",
               "encodings": {
@@ -1933,7 +1941,7 @@
               "version": 2,
               "frame": {
                 "showTitle": true,
-                "title": "Average Growth"
+                "title": "Croissance moyenne globale de l’emploi"
               },
               "widgetType": "counter",
               "encodings": {
