@@ -74,9 +74,14 @@ bls-cew-data-pipeline/
 │ 
 ├── transformation/
 │ ├── cleaning.py
-│ └── kpis.py
+│ └── kpi_sql.sql
 │
-├── notebooks/
+├── analysis
+│  ├── statistical_validation.ipynb
+│  └── BLS Labor Market Analytics Dashboard.Lvdash.json
+│ 
+├── ml/
+│  └── prediction.py
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -85,65 +90,83 @@ bls-cew-data-pipeline/
 
 ## Étapes du pipeline
 
-### 1. Ingestion (Automatisation)
+### 1. Ingestion (Bronze)
 
-- Téléchargement automatique des fichiers ZIP annuels
-- Extraction des fichiers `.annual*.csv`
-- Stockage dans la couche Bronze
+- Téléchargement automatique des fichiers ZIP
+- Extraction des fichiers CSV
+- Stockage dans Databricks
 
-Fichier : ingestion/download_cew_data.py
-
+📁 `ingestion/download_cew_data.py`
 
 ---
 
-### 2. EDA Bronze
+### 2. EDA (Exploration)
 
 Analyse des données brutes :
 
-- Schéma des colonnes
-- Nombre total de lignes
-- Détection des valeurs nulles
-- Vérification des doublons
+- Vérification du schéma
+- Analyse des nulls
+- Détection des doublons
 - Détection des valeurs négatives
 
-Fichier : exploration/eda.py
-
+📁 `exploration/eda.py`
 
 ---
 
-### 3. Nettoyage Silver (Delta Lake)
+### 3. Nettoyage (Silver - Delta Lake)
 
-Transformations appliquées :
+Transformations :
 
-- Normalisation des noms de colonnes
-- Suppression des colonnes `disclosure_code`
+- Normalisation des colonnes
 - Filtrage `agglvl_code = 73`
-- Création de `sector_type` :
-  - Private (own_code = 1)
-  - Public (own_code = 2,3,5)
-- Typage des colonnes
+- Création `sector_type` (Private / Public)
+- Typage des données
 - Suppression des doublons
-- Écriture en format Delta partitionné par année
+- Traitement des valeurs aberrantes
+- Ajout de colonnes dérivées (naics2, covid_period)
+- Jointure avec les noms des industries
 
-
-Fichier : Stockage : dbfs:/Volumes/bls_cew/silver/silver_cew/cleaned_data
-
+📁 `transformation/silver_cleaning.py`  
+📦 Stockage : `bls_cew.silver.cleaned_data`
 
 ---
 
-### 4. Calcul des KPIs (Gold – Pandas)
+### 4. Analyse & KPIs (SQL Layer)
 
-Lecture des données Silver via Spark puis conversion en Pandas.
+KPIs calculés via SQL :
 
-KPIs calculés :
+- Emploi total
+- Salaires totaux
+- Salaire moyen
+- Croissance annuelle (%)
+- Top industries
 
-1. Emploi total par année et secteur
-2. Salaires totaux par année et secteur
-3. Salaire moyen annuel
-4. Croissance annuelle (OTY %)
-5. Top industries par emploi
+📁 `transformation/kpi_sql.sql`
 
-Fichier : transformation/kpis.py
+---
+
+### 5. Dashboard
+
+Dashboard interactif Databricks :
+
+- Vue d’ensemble
+- Analyse salaires
+- Top industries
+- Impact COVID
+- Impact AI
+
+📁 `analysis/dashboard.json`
+
+---
+
+### 6. Machine Learning
+
+Modèle de régression pour prédire l’emploi :
+
+- Variable : année
+- Cible : emploi total
+
+📁 `ml/prediction.py`
 
 ---
 
@@ -158,8 +181,7 @@ Repos → Add Repo → GitHub
 ```python
 %run ./ingestion/download_cew_data
 %run ./exploration/eda
-%run ./transformation/silver_cleaning
-%run ./transformation/kpis
+%run ./transformation/cleaning
 ```
 ---
 ### 5. Technologies utilisées
@@ -168,5 +190,6 @@ Repos → Add Repo → GitHub
 - Databricks
 - Delta Lake
 - Pandas
+- SQL
 - Jira & Confluence
 
