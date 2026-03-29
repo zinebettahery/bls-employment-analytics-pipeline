@@ -99,13 +99,17 @@
       ]
     },
     {
-      "name": "6e5f0f99",
-      "displayName": "Number of Industries",
+      "name": "73b69242",
+      "displayName": "wage gap",
       "queryLines": [
         "SELECT \r\n",
-        "  COUNT(DISTINCT industry_name) AS nb_industries\r\n",
+        "  ROUND(\r\n",
+        "    AVG(CASE WHEN sector_type='Private' THEN avg_annual_pay END) -\r\n",
+        "    AVG(CASE WHEN sector_type='Public' THEN avg_annual_pay END),\r\n",
+        "    2\r\n",
+        "  ) AS wage_gap\r\n",
         "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE industry_name IS NOT NULL"
+        "WHERE sector_type IN ('Private','Public')"
       ]
     },
     {
@@ -170,20 +174,6 @@
       ]
     },
     {
-      "name": "73b69242",
-      "displayName": "wage gap",
-      "queryLines": [
-        "SELECT \r\n",
-        "  ROUND(\r\n",
-        "    AVG(CASE WHEN sector_type='Private' THEN avg_annual_pay END) -\r\n",
-        "    AVG(CASE WHEN sector_type='Public' THEN avg_annual_pay END),\r\n",
-        "    2\r\n",
-        "  ) AS wage_gap\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type IN ('Private','Public')"
-      ]
-    },
-    {
       "name": "159b4295",
       "displayName": "Top Industries Employment and Pay Analysis Summary",
       "queryLines": [
@@ -228,6 +218,16 @@
         "GROUP BY industry_name\r\n",
         "ORDER BY SUM(annual_avg_emplvl) ASC\r\n",
         "LIMIT 1"
+      ]
+    },
+    {
+      "name": "6e5f0f99",
+      "displayName": "Number of Industries",
+      "queryLines": [
+        "SELECT \r\n",
+        "  COUNT(DISTINCT industry_name) AS nb_industries\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE industry_name IS NOT NULL"
       ]
     },
     {
@@ -296,6 +296,46 @@
       ]
     },
     {
+      "name": "fe63d6a0",
+      "displayName": "Employment Drop 2020",
+      "queryLines": [
+        "WITH data AS (\r\n",
+        "  SELECT year, SUM(annual_avg_emplvl) AS emp\r\n",
+        "  FROM bls_cew.silver.cleaned_data\r\n",
+        "  GROUP BY year\r\n",
+        ")\r\n",
+        "SELECT \r\n",
+        "  ROUND(\r\n",
+        "    ((MAX(CASE WHEN year=2020 THEN emp END) -\r\n",
+        "      MAX(CASE WHEN year=2019 THEN emp END))\r\n",
+        "    / MAX(CASE WHEN year=2019 THEN emp END)) * 100,\r\n",
+        "    2\r\n",
+        "  ) AS drop_pct\r\n",
+        "FROM data"
+      ]
+    },
+    {
+      "name": "3efeee06",
+      "displayName": "Average Annual Pay by Sector Type Summary",
+      "queryLines": [
+        "SELECT \r\n",
+        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "WHERE sector_type IN ('Private','Public')"
+      ]
+    },
+    {
+      "name": "8c0bd74c",
+      "displayName": "Growth vs Salary",
+      "queryLines": [
+        "SELECT industry_name,\r\n",
+        "AVG(avg_annual_pay) AS salary,\r\n",
+        "AVG(oty_annual_avg_emplvl_pct_chg) AS growth\r\n",
+        "FROM bls_cew.silver.cleaned_data\r\n",
+        "GROUP BY industry_name"
+      ]
+    },
+    {
       "name": "06df2723",
       "displayName": "growing industries",
       "queryLines": [
@@ -317,46 +357,6 @@
         "GROUP BY industry_name\r\n",
         "ORDER BY growth ASC\r\n",
         "LIMIT 10"
-      ]
-    },
-    {
-      "name": "8c0bd74c",
-      "displayName": "Growth vs Salary",
-      "queryLines": [
-        "SELECT industry_name,\r\n",
-        "AVG(avg_annual_pay) AS salary,\r\n",
-        "AVG(oty_annual_avg_emplvl_pct_chg) AS growth\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "GROUP BY industry_name"
-      ]
-    },
-    {
-      "name": "3efeee06",
-      "displayName": "Average Annual Pay by Sector Type Summary",
-      "queryLines": [
-        "SELECT \r\n",
-        "  ROUND(AVG(avg_annual_pay), 2) AS avg_salary\r\n",
-        "FROM bls_cew.silver.cleaned_data\r\n",
-        "WHERE sector_type IN ('Private','Public')"
-      ]
-    },
-    {
-      "name": "fe63d6a0",
-      "displayName": "Employment Drop 2020",
-      "queryLines": [
-        "WITH data AS (\r\n",
-        "  SELECT year, SUM(annual_avg_emplvl) AS emp\r\n",
-        "  FROM bls_cew.silver.cleaned_data\r\n",
-        "  GROUP BY year\r\n",
-        ")\r\n",
-        "SELECT \r\n",
-        "  ROUND(\r\n",
-        "    ((MAX(CASE WHEN year=2020 THEN emp END) -\r\n",
-        "      MAX(CASE WHEN year=2019 THEN emp END))\r\n",
-        "    / MAX(CASE WHEN year=2019 THEN emp END)) * 100,\r\n",
-        "    2\r\n",
-        "  ) AS drop_pct\r\n",
-        "FROM data"
       ]
     },
     {
@@ -1951,12 +1951,6 @@
           }
         }
       ],
-      "pageType": "PAGE_TYPE_CANVAS",
-      "layoutVersion": "GRID_V1"
-    },
-    {
-      "name": "71ac780f",
-      "displayName": "prediction",
       "pageType": "PAGE_TYPE_CANVAS",
       "layoutVersion": "GRID_V1"
     }
