@@ -45,7 +45,8 @@ En résumé, il illustre une approche intégrée combinant ingénierie des donn�
 ---
 
 ## Architecture
-<img width="1536" height="1024" alt="ChatGPT Image 2 mars 2026, 21_16_41" src="https://github.com/user-attachments/assets/f73fdd17-bf8d-4620-8826-508b4df285ec" />
+<img width="1024" height="1536" alt="ChatGPT Image 29 mars 2026, 00_27_23" src="https://github.com/user-attachments/assets/ecc8c1a2-9474-4f39-812e-2ddadcd39c65" />
+
 
 
 ---
